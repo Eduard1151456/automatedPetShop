@@ -1,0 +1,42 @@
+import requests
+import datetime
+
+username = "Eduard1151456"
+repository_name = "POOII"
+token = "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"
+
+# Authenticate with the GitHub API
+headers = {
+    "Authorization": f"Bearer {token}"
+}
+
+# Loop through each day from the start date to today
+start_date = datetime.date(2023, 3, 1)
+current_date = datetime.date.today()
+delta = datetime.timedelta(days=1)
+
+for date in (start_date + delta * n for n in range((current_date - start_date).days)):
+    # Create a new commit with a random message
+    message = f"Fake commit {date}"
+    commit_data = {
+        "message": message,
+        "committer": {
+            "name": username,
+            "email": f"{username}@users.noreply.github.com",
+            "date": f"{date}T12:00:00Z"
+        },
+        "author": {
+            "name": username,
+            "email": f"{username}@users.noreply.github.com",
+            "date": f"{date}T12:00:00Z"
+        }
+    }
+
+    commit_url = f"https://api.github.com/repos/{username}/{repository_name}/commits"
+    commit_response = requests.post(commit_url, headers=headers, json=commit_data)
+
+    if commit_response.status_code != 201:
+        print(f"Failed to create commit for {date}")
+        print(commit_response.json())
+    else:
+        print(f"Commit created successfully for {date}")
